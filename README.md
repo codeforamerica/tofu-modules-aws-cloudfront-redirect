@@ -5,6 +5,11 @@
 This module creates a CloudFront distrubution and function to create a simple
 redirect.
 
+> [!NOTE]
+> The CloudFront distribution created by this module is not protected by a Web
+> Application Firewall (WAF). It's _strongly_ recommended that your destination
+> have a WAF in place.
+
 ## Usage
 
 Add this module to your `main.tf` (or appropriate) file and configure the inputs

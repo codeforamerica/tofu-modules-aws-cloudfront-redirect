@@ -1,0 +1,4 @@
+misconfigurations:
+  # Our CloudFront disstribution just performs a simple redirect, and therefore
+  # doesn't need a WAF.
+  - id: AVD-AWS-0011
