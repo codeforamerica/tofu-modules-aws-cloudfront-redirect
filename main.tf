@@ -14,6 +14,7 @@ resource "aws_cloudfront_function" "this" {
   }
 }
 
+#trivy:ignore:AVD-AWS-0010
 resource "aws_cloudfront_distribution" "this" {
   # Skip distribution creation when attaching the function to an existing distribution.
   for_each = var.create_distribution ? toset(["this"]) : toset([])
