@@ -1,9 +1,12 @@
 data "aws_route53_zone" "source" {
-  for_each = var.create_records ? toset(["this"]) : toset([])
+  # Zone lookup is only needed when this module manages the distribution and DNS records.
+  for_each = var.create_distribution && var.create_records ? toset(["this"]) : toset([])
 
   name = var.source_domain
 }
 
 data "aws_cloudfront_cache_policy" "endpoint" {
-  name = "Managed-CachingOptimized"
+  # Cache policy lookup is only needed when creating the distribution.
+  count = var.create_distribution ? 1 : 0
+  name  = "Managed-CachingOptimized"
 }
