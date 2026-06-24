@@ -37,10 +37,13 @@ resource "aws_cloudfront_distribution" "this" {
     }
   }
 
-  logging_config {
-    include_cookies = false
-    bucket          = "${var.logging_bucket}.s3.amazonaws.com"
-    prefix          = "cloudfront/${local.fqdn}"
+  dynamic "logging_config" {
+    for_each = var.logging_bucket != null ? [1] : []
+    content {
+      include_cookies = false
+      bucket          = "${var.logging_bucket}.s3.amazonaws.com"
+      prefix          = "cloudfront/${local.fqdn}"
+    }
   }
 
   default_cache_behavior {
