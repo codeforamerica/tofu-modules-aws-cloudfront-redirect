@@ -20,6 +20,8 @@ variable "logging_bucket" {
   type        = string
   default     = null
 
+  # OpenTofu supports cross-variable validation; enforce logging_bucket
+  # is required when create_distribution is true.
   validation {
     condition     = !var.create_distribution || var.logging_bucket != null
     error_message = "logging_bucket is required when create_distribution is true."
