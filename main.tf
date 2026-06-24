@@ -39,7 +39,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   dynamic "logging_config" {
-    for_each = var.logging_bucket != null ? [1] : []
+    for_each = var.logging_bucket != null ? ["this"] : []
     content {
       include_cookies = false
       bucket          = "${var.logging_bucket}.s3.amazonaws.com"
