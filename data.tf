@@ -7,6 +7,6 @@ data "aws_route53_zone" "source" {
 
 data "aws_cloudfront_cache_policy" "endpoint" {
   # Cache policy lookup is only needed when creating the distribution.
-  count = var.create_distribution ? 1 : 0
-  name  = "Managed-CachingOptimized"
+  for_each = var.create_distribution ? toset(["this"]) : toset([])
+  name     = "Managed-CachingOptimized"
 }

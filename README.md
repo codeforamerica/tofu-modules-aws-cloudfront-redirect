@@ -36,7 +36,6 @@ module "redirect" {
   create_distribution = false
   source_domain       = "my-project.org"
   destination         = "https://www.my-project.org/new-path"
-  logging_bucket      = module.logging.bucket
 }
 
 resource "aws_cloudfront_distribution" "existing" {
@@ -66,7 +65,7 @@ tofu plan
 | Name             | Description                                                                                                                                     | Type          | Default | Required |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- | -------- |
 | destination      | Destination for redirects, including scheme (e.g. https://my.domain.com).                                                                       | `string`      | n/a     | yes      |
-| logging_bucket   | The S3 bucket used for logging.                                                                                                                 | `string`      | n/a     | yes      |
+| logging_bucket   | The S3 bucket used for logging. Required when `create_distribution` is `true`.                                                                  | `string`      | `null`  | no       |
 | source_domain    | Domain to redirect from. This should match the hosted zone when creating verification records.                                                  | `string`      | n/a     | yes      |
 | create_distribution | Create a new CloudFront distribution. Set to `false` to only create the redirect function and attach it to an existing distribution via the `function_arn` output. | `bool` | `true` | no |
 | create_records   | Create DNS records using Route 53. A hosted zone matching the source domain must exist. If `false`, the certificate must be manually validated. Only applies when `create_distribution` is `true`.  | `bool`        | `true`  | no       |

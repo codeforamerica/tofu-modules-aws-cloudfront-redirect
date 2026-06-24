@@ -15,7 +15,8 @@ resource "aws_cloudfront_function" "this" {
 }
 
 resource "aws_cloudfront_distribution" "this" {
-  count = var.create_distribution ? 1: 0   # Skip distribution creation when attaching the function to an existing distribution.
+  # Skip distribution creation when attaching the function to an existing distribution.
+  for_each = var.create_distribution ? toset(["this"]) : toset([])
   enabled         = true
   comment         = "Redirect ${local.fqdn} to ${var.destination}."
   is_ipv6_enabled = true
@@ -51,7 +52,8 @@ resource "aws_cloudfront_distribution" "this" {
     default_ttl            = 0
     max_ttl                = 0
     compress               = false
-    cache_policy_id        = data.aws_cloudfront_cache_policy.endpoint[0].id  # Data source is count-based, so [0] index is required.
+    # Data source is for_each-based, so ["this"] key is required.
+    cache_policy_id        = data.aws_cloudfront_cache_policy.endpoint["this"].id
 
     function_association {
       event_type   = "viewer-request"
@@ -66,26 +68,18 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate.this[0].arn   # Certificate is count-based, so [0] index is required.
+    # Certificate is for_each-based, so ["this"] key is required.
+    acm_certificate_arn      = aws_acm_certificate.this["this"].arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
 
   tags = local.tags
-
-  # Cross-variable validation isn't supported in OpenTofu, so enforce
-  # logging_bucket at plan time via a precondition instead.
-
-  lifecycle {
-    precondition {
-      condition     = var.logging_bucket != null
-      error_message = "logging_bucket is required when create_distribution is true."
-    }
-  }
 }
 
 resource "aws_acm_certificate" "this" {
-  count = var.create_distribution ? 1 : 0   # Certificate is only needed when this module manages the distribution
+  # Certificate is only needed when this module manages the distribution.
+  for_each = var.create_distribution ? toset(["this"]) : toset([])
   domain_name       = var.source_domain
   validation_method = "DNS"
 
@@ -97,7 +91,8 @@ resource "aws_acm_certificate" "this" {
 }
 
 resource "aws_route53_record" "this" {
-  for_each = var.create_distribution && var.create_records ? toset(["A", "AAAA"]) : toset([])  # DNS records only apply when this module owns the distribution.
+  # DNS records only apply when this module owns the distribution.
+  for_each = var.create_distribution && var.create_records ? toset(["A", "AAAA"]) : toset([])
 
   zone_id = data.aws_route53_zone.source["this"].zone_id
   name    = local.fqdn
@@ -106,16 +101,16 @@ resource "aws_route53_record" "this" {
   alias {
     # CloudFront doesn't provide a health check.
     evaluate_target_health = false
-    # Distribution is count-based, so [0] index is required.
-    name    = aws_cloudfront_distribution.this[0].domain_name
-    zone_id = aws_cloudfront_distribution.this[0].hosted_zone_id
+    # Distribution is for_each-based, so ["this"] key is required.
+    name    = aws_cloudfront_distribution.this["this"].domain_name
+    zone_id = aws_cloudfront_distribution.this["this"].hosted_zone_id
   }
 }
 
 resource "aws_route53_record" "validation" {
   # Validation records are only needed when this module manages the certificate.
   for_each = var.create_distribution && var.create_records ? {
-    for dvo in aws_acm_certificate.this[0].domain_validation_options : dvo.domain_name => {
+    for dvo in aws_acm_certificate.this["this"].domain_validation_options : dvo.domain_name => {
       name    = dvo.resource_record_name
       record  = dvo.resource_record_value
       type    = dvo.resource_record_type
@@ -134,6 +129,6 @@ resource "aws_route53_record" "validation" {
 resource "aws_acm_certificate_validation" "this" {
   # Certificate validation only runs when this module creates the certificate.
   for_each = var.create_distribution && var.create_records ? toset(["this"]) : toset([])
-  certificate_arn = aws_acm_certificate.this[0].arn
+  certificate_arn = aws_acm_certificate.this["this"].arn
   validation_record_fqdns = [for record in aws_route53_record.validation : record.fqdn]
 }

@@ -16,8 +16,14 @@ variable "destination" {
 }
 
 variable "logging_bucket" {
-  description = "The S3 bucket used for logging."
+  description = "The S3 bucket used for logging. Required when `create_distribution` is `true`."
   type        = string
+  default     = null
+
+  validation {
+    condition     = !var.create_distribution || var.logging_bucket != null
+    error_message = "logging_bucket is required when create_distribution is true."
+  }
 }
 
 variable "source_domain" {
