@@ -5,6 +5,7 @@ resource "aws_cloudfront_function" "this" {
   publish = true
   code = templatefile("${path.module}/templates/function.js.tftpl", {
     destination = var.destination
+    path        = var.path
     static      = var.static
     status_code = var.status_code
   })

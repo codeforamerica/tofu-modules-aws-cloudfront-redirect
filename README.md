@@ -69,6 +69,7 @@ tofu plan
 | source_domain    | Domain to redirect from. This should match the hosted zone when creating verification records.                                                  | `string`      | n/a     | yes      |
 | create_distribution | Create a new CloudFront distribution. Set to `false` to only create the redirect function and attach it to an existing distribution via the `function_arn` output. | `bool` | `true` | no |
 | create_records   | Create DNS records using Route 53. A hosted zone matching the source domain must exist. If `false`, the certificate must be manually validated. Only applies when `create_distribution` is `true`.  | `bool`        | `true`  | no       |
+| path             | Optional path to match for the redirect. When set, only requests where the URI starts with this path are redirected. When `null`, all requests are redirected. | `string` | `null` | no |
 | source_subdomain | Optional subdomain for the source redirect. Required if the fully qualified domain name (FQDN) is a subdomain of the hosted zone domain.        | `string`      | `null`  | no       |
 | static           | Redirect to the destination without passing the path.                                                                                           | `bool`        | `false` | no       |
 | status_code      | HTTP status code for the redirect. Must be either 301 (permanent) or 302 (temporary).                                                           | `number`      | `301`   | no       |

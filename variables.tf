@@ -45,6 +45,16 @@ variable "source_subdomain" {
   default     = null
 }
 
+variable "path" {
+  type        = string
+  description = <<-EOT
+    Optional path to match for the redirect. When set, only requests where the
+    URI starts with this path are redirected. When `null`, all requests are
+    redirected.
+    EOT
+  default     = null
+}
+
 variable "static" {
   type        = bool
   description = "Redirect to the destination without passing the path."
