@@ -11,6 +11,7 @@ and this project adheres to
 ### Feat
 
 - Support redirecting from an existing distrbution. (#5)
+- Add option for path based redirects. (#7)
 
 ## 1.0.0 (2026-02-10)
 
