@@ -3,8 +3,47 @@ function handler(event) {
   const PATH = ${ path != null ? "\"${path}\"" : "null" };
   const STATIC = ${static};
   const STATUS_CODE = ${status_code};
+  const FORWARD_QUERY = ${forward_query};
+  const TRACK_REFERRER = ${track_referrer};
 
   const request = event.request;
+  const queryParams = {};
+
+  if (FORWARD_QUERY) {
+    for (const key in request.querystring) {
+      queryParams[key] = request.querystring[key].value;
+    }
+  }
+
+  if (TRACK_REFERRER) {
+    const refererHeader = request.headers.referer;
+    const referer = refererHeader && refererHeader.value;
+    if (referer && !('ref' in queryParams)) {
+      queryParams['ref'] = referer;
+    }
+  }
+
+  // Build the redirect Location: append the original path (unless static),
+  // then append the collected query parameters using '?' or '&' depending
+  // on whether the destination URL already contains a query string.
+  let path = STATIC ? '' : request.uri;
+  if (path) {
+    // Avoid duplicating the destination's own path prefix: a destination of
+    // ".../es" plus an incoming "/es/foo" should yield "/es/foo", not
+    // "/es/es/foo". Only strips on an exact match or a '/' boundary, so
+    // "/estimate" is left untouched.
+    const destPath = DESTINATION.replace(/^https?:\/\/[^/]+/, '');
+    if (destPath && (path === destPath || path.indexOf(destPath + '/') === 0)) {
+      path = path.slice(destPath.length);
+    }
+  }
+  const queryParts = [];
+  for (const key in queryParams) {
+    queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(queryParams[key]));
+  }
+  const queryString = queryParts.join('&');
+  const querySeparator = DESTINATION.indexOf('?') === -1 ? '?' : '&';
+  const location = DESTINATION + path + (queryString ? querySeparator + queryString : '');
 
   // When a path is configured, only redirect requests that match.
   if (PATH !== null && !request.uri.startsWith(PATH)) {
@@ -13,9 +52,9 @@ function handler(event) {
 
   return {
     statusCode: STATUS_CODE,
-    statusDescription: 'Moved Permanently',
+    statusDescription: STATUS_CODE === 301 ? 'Moved Permanently' : 'Found',
     headers: {
-      "location": { "value": DESTINATION + (STATIC ? '' : request.uri) }
+      "location": { "value": location }
     }
   };
 }
