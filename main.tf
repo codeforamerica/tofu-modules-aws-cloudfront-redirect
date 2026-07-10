@@ -10,6 +10,8 @@ resource "aws_cloudfront_function" "this" {
     static         = var.static
     status_code    = var.status_code
     track_referrer = var.track_referrer
+    track_source   = var.track_source
+    source_domain  = var.source_domain
   })
 
   lifecycle {
