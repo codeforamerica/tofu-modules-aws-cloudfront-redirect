@@ -3,8 +3,10 @@
 [![GitHub Release][badge-release]][latest-release]
 
 This module creates a CloudFront function to perform a simple redirect. By
-default it also creates a CloudFront distribution to serve the function. When
-redirecting a portion of an existing distribution (e.g. a specific path),
+default it also creates a CloudFront distribution to serve the function. It
+upgrades HTTP requests to use HTTPS when redirecting.
+
+When redirecting a portion of an existing distribution (e.g. a specific path),
 set `create_distribution = false` and attach the function to your distribution
 using the `function_arn` output.
 
