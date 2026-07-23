@@ -78,6 +78,7 @@ tofu plan
 | status_code      | HTTP status code for the redirect. Must be either 301 (permanent) or 302 (temporary).                                                           | `number`      | `301`   | no       |
 | tags             | Tags to apply to all resources.                                                                                                                 | `map(string)` | `{}`    | no       |
 | track_referrer   | Capture the incoming `Referer` header and forward it to the destination as a `ref` query parameter.                                             | `bool`        | `false` | no       |
+| track_source     | Append the configured `source_domain` to the destination URL as a `source` query parameter, for per-source attribution across multiple redirect domains that share a destination. Requires `status_code = 302`. | `bool`        | `false` | no       |
 
 ## Outputs
 

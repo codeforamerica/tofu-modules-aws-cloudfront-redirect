@@ -5,6 +5,8 @@ function handler(event) {
   const STATUS_CODE = ${status_code};
   const FORWARD_QUERY = ${forward_query};
   const TRACK_REFERRER = ${track_referrer};
+  const TRACK_SOURCE = ${track_source};
+  const SOURCE = "${source_domain}";
 
   const request = event.request;
   const queryParams = {};
@@ -21,6 +23,10 @@ function handler(event) {
     if (referer && !('ref' in queryParams)) {
       queryParams['ref'] = referer;
     }
+  }
+
+  if (TRACK_SOURCE) {
+    queryParams['source'] = SOURCE;
   }
 
   // Build the redirect Location: append the original path (unless static),

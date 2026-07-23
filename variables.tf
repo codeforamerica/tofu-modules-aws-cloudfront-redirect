@@ -103,7 +103,34 @@ variable "track_referrer" {
 
   validation {
     condition     = !var.track_referrer || var.status_code != 301
-    error_message = "track_referrer with status_code=301 will only capture attribution on the first visit per browser, since 301s are aggressively cached. Use status_code=302."
+    error_message = <<-EOT
+      track_referrer with status_code=301 will only capture attribution on the
+      first visit per browser, since 301s are aggressively cached. Use
+      status_code=302.
+      EOT
+  }
+}
+
+variable "track_source" {
+  type        = bool
+  description = <<-EOT
+    Append the configured `source_domain` to the destination URL as a `source`
+    query parameter. Useful when multiple source domains redirect to a single
+    destination and you need per-source attribution independent of the browser's
+    `Referer` header (which can be degraded or lost through the redirect hop).
+
+    If the incoming query already contains a `source` parameter, the module's
+    configured value takes precedence and overwrites it.
+    EOT
+  default     = false
+
+  validation {
+    condition     = !var.track_source || var.status_code != 301
+    error_message = <<-EOT
+      track_source with status_code=301 will only capture attribution on the
+      first visit per browser, since 301s are aggressively cached. Use
+      status_code=302.
+      EOT
   }
 }
 
