@@ -103,7 +103,11 @@ variable "track_referrer" {
 
   validation {
     condition     = !var.track_referrer || var.status_code != 301
-    error_message = "track_referrer with status_code=301 will only capture attribution on the first visit per browser, since 301s are aggressively cached. Use status_code=302."
+    error_message = <<-EOT
+      track_referrer with status_code=301 will only capture attribution on the
+      first visit per browser, since 301s are aggressively cached. Use
+      status_code=302.
+      EOT
   }
 }
 
@@ -122,7 +126,11 @@ variable "track_source" {
 
   validation {
     condition     = !var.track_source || var.status_code != 301
-    error_message = "track_source with status_code=301 will only capture attribution on the first visit per browser, since 301s are aggressively cached. Use status_code=302."
+    error_message = <<-EOT
+      track_source with status_code=301 will only capture attribution on the
+      first visit per browser, since 301s are aggressively cached. Use
+      status_code=302.
+      EOT
   }
 }
 
