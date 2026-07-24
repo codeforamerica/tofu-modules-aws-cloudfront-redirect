@@ -3,10 +3,10 @@
 [![GitHub Release][badge-release]][latest-release]
 
 This module creates a CloudFront function to perform a simple redirect. By
-default it also creates a CloudFront distribution to serve the function. By
-default, the distribution rejects plain HTTP requests
-(`viewer_protocol_policy = "https-only"`); set `viewer_protocol_policy =
-"redirect-to-https"` to upgrade HTTP requests to HTTPS instead.
+default it also creates a CloudFront distribution to serve the function.
+
+By default, the distribution enforces HTTPS and rejects plain HTTP requests.
+To redirect HTTP to HTTPS, set `viewer_protocol_policy = "redirect-to-https"`.
 
 When redirecting a portion of an existing distribution (e.g. a specific path),
 set `create_distribution = false` and attach the function to your distribution
