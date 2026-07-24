@@ -10,6 +10,8 @@ resource "aws_cloudfront_function" "this" {
     static         = var.static
     status_code    = var.status_code
     track_referrer = var.track_referrer
+    track_source   = var.track_source
+    source_domain  = var.source_domain
   })
 
   lifecycle {
@@ -51,7 +53,7 @@ resource "aws_cloudfront_distribution" "this" {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "redirect"
-    viewer_protocol_policy = "https-only"
+    viewer_protocol_policy = var.viewer_protocol_policy
     min_ttl                = 0
     default_ttl            = 0
     max_ttl                = 0
