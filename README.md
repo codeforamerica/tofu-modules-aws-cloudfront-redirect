@@ -3,12 +3,16 @@
 [![GitHub Release][badge-release]][latest-release]
 
 This module creates a CloudFront function to perform a simple redirect. By
-default it also creates a CloudFront distribution to serve the function. It
-upgrades HTTP requests to use HTTPS when redirecting.
+default it also creates a CloudFront distribution to serve the function. By
+default, the distribution rejects plain HTTP requests
+(`viewer_protocol_policy = "https-only"`); set `viewer_protocol_policy =
+"redirect-to-https"` to upgrade HTTP requests to HTTPS instead.
 
 When redirecting a portion of an existing distribution (e.g. a specific path),
 set `create_distribution = false` and attach the function to your distribution
-using the `function_arn` output.
+using the `function_arn` output. In that case, `viewer_protocol_policy` has no
+effect — configure the viewer protocol policy on your existing distribution's
+cache behavior directly.
 
 > [!NOTE]
 > The CloudFront distribution created by this module is not protected by a Web
@@ -79,6 +83,7 @@ tofu plan
 | tags             | Tags to apply to all resources.                                                                                                                 | `map(string)` | `{}`    | no       |
 | track_referrer   | Capture the incoming `Referer` header and forward it to the destination as a `ref` query parameter.                                             | `bool`        | `false` | no       |
 | track_source     | Append the configured `source_domain` to the destination URL as a `source` query parameter, for per-source attribution across multiple redirect domains that share a destination. Requires `status_code = 302`. | `bool`        | `false` | no       |
+| viewer_protocol_policy | Viewer protocol policy for the CloudFront distribution. `https-only` rejects plain HTTP requests; `redirect-to-https` upgrades them to HTTPS instead. Only applies when `create_distribution` is `true`. | `string` | `"https-only"` | no |
 
 ## Outputs
 

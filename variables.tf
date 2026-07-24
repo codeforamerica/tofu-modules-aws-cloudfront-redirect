@@ -149,3 +149,18 @@ variable "create_distribution" {
     EOT
   default     = true
 }
+
+variable "viewer_protocol_policy" {
+  type        = string
+  description = <<-EOT
+    Viewer protocol policy for the CloudFront distribution. `https-only`
+    rejects plain HTTP requests; `redirect-to-https` upgrades them to HTTPS
+    instead. Only applies when `create_distribution` is `true`.
+    EOT
+  default     = "https-only"
+
+  validation {
+    condition     = contains(["https-only", "redirect-to-https"], var.viewer_protocol_policy)
+    error_message = "viewer_protocol_policy must be either \"https-only\" or \"redirect-to-https\"."
+  }
+}
